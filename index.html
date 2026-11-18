@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShouryaConnect - Social, Games & Music</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --card: #111827;
+            --card-border: #1f2937;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #f59e0b;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .hidden { display: none !important; }
+        
+        .auth-container { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--card-border); border-radius: 20px; padding: 36px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .logo-area { text-align: center; margin-bottom: 24px; }
+        .logo-area h1 { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+        .logo-area span { color: var(--primary); }
+        .founder-tag { display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 8px; border: 1px solid rgba(245, 158, 11, 0.3); }
+        
+        .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; border: 1px solid var(--card-border); }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+        .tab.active { background: var(--primary); color: white; }
+
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+        input { width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--card-border); border-radius: 10px; color: var(--text); font-size: 15px; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: var(--primary); }
+        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
+        .btn:hover { background: var(--primary-hover); }
+
+        .dashboard { width: 100%; max-width: 1000px; background: var(--card); border: 1px solid var(--card-border); border-radius: 20px; display: grid; grid-template-columns: 280px 1fr; overflow: hidden; height: 80vh; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); }
+        .sidebar { background: rgba(0,0,0,0.2); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; padding: 20px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
+        .avatar { width: 42px; height: 42px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+        .user-info h4 { font-size: 15px; font-weight: 600; }
+        .user-info span { font-size: 12px; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .user-info span::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
+
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); text-align: left; padding: 12px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+        .nav-btn:hover, .nav-btn.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+
+        .main-content { padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 20px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+
+        .friends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+        .friend-card { background: var(--bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .friend-header { display: flex; align-items: center; gap: 10px; }
+        .friend-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .status-online { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-offline { background: rgba(156, 163, 175, 0.15); color: var(--text-muted); }
+        .call-btn { padding: 8px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .game-card { background: var(--bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+        .play-btn { padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        .music-player { background: var(--bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+        .controls { display: flex; gap: 12px; }
+        .ctrl-btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- AUTHENTICATION SCREEN -->
+    <div id="authScreen" class="auth-container">
+        <div class="logo-area">
+            <h1>Shourya<span>Connect</span></h1>
+            <div class="founder-tag">👑 Founder: Shourya</div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" id="loginTabBtn" onclick="switchTab('login')">Login</div>
+            <div class="tab" id="signupTabBtn" onclick="switchTab('signup')">Create Account</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUser" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" placeholder="Enter your password">
+            </div>
+            <button class="btn" onclick="handleLogin()">Login to ShouryaConnect</button>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="hidden">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="signupUser" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPass" placeholder="Create a password">
+            </div>
+            <div class="form-group">
+                <label>Repeat Password</label>
+                <input type="password" id="signupPassRepeat" placeholder="Repeat your password">
+            </div>
+            <button class="btn" onclick="handleSignup()">Create Account & Join</button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboardScreen" class="dashboard hidden">
+        <div class="sidebar">
+            <div class="user-profile">
+                <div class="avatar" id="userAvatar">S</div>
+                <div class="user-info">
+                    <h4 id="displayUsername">User</h4>
+                    <span>Online</span>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="switchSection('friends')">👥 Online Friends</button>
+                <button class="nav-btn" onclick="switchSection('arcade')">🎮 Arcade Games</button>
+                <button class="nav-btn" onclick="switchSection('music')">🎵 Music Lounge</button>
+                <button class="nav-btn" onclick="handleLogout()" style="color: var(--danger); margin-top: auto;">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="section-friends">
+                <div class="section-title"><span>Registered Members & Calling</span></div>
+                <div class="friends-grid" id="friendsGrid"></div>
+            </div>
+
+            <div id="section-arcade" class="hidden">
+                <div class="section-title"><span>Mini Arcade Games</span></div>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <h3>Tic-Tac-Toe</h3>
+                        <button class="play-btn" onclick="alert('Launching Tic-Tac-Toe!')">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-music" class="hidden">
+                <div class="section-title"><span>Music Lounge</span></div>
+                <div class="music-player">
+                    <h3>ShouryaConnect Lo-Fi Beats</h3>
+                    <div class="controls">
+                        <button class="ctrl-btn" onclick="alert('Playing track')">▶️ Play / Pause</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const loginTab = document.getElementById('loginTabBtn');
+            const signupTab = document.getElementById('signupTabBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleSignup() {
+            const user = document.getElementById('signupUser').value.trim();
+            const pass = document.getElementById('signupPass').value;
+            const repeat = document.getElementById('signupPassRepeat').value;
+            if (!user || !pass) { alert('Please fill in all fields.'); return; }
+            if (pass !== repeat) { alert('Passwords do not match!'); return; }
+            localStorage.setItem('sc_user', user);
+            launchDashboard(user);
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            if (!user || !pass) { alert('Please enter your details.'); return; }
+            localStorage.setItem('sc_user', user);
+            launchDashboard(user);
+        }
+
+        function launchDashboard(username) {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            document.getElementById('displayUsername').innerText = username;
+            document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
+            loadFriendsList(username);
+        }
+
+        function loadFriendsList(currentUser) {
+            const grid = document.getElementById('friendsGrid');
+            const mockFriends = [
+                { name: 'Shourya (Founder)', online: true },
+                { name: 'Aarav', online: true },
+                { name: 'Rohan', online: false }
+            ];
+            grid.innerHTML = '';
+            mockFriends.forEach(f => {
+                if (f.name === currentUser) return;
+                grid.innerHTML += `
+                    <div class="friend-card">
+                        <div class="friend-header">
+                            <div class="avatar" style="width: 32px; height: 32px; font-size: 14px;">${f.name.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">${f.name}</div>
+                                <span class="friend-status ${f.online ? 'status-online' : 'status-offline'}">${f.online ? 'Online' : 'Offline'}</span>
+                            </div>
+                        </div>
+                        ${f.online ? `<button class="call-btn" onclick="alert('Calling ${f.name}...')">📞 Call</button>` : `<button class="call-btn" style="background:var(--card-border); color:var(--text-muted);" disabled>Offline</button>`}
+                    </div>
+                `;
+            });
+        }
+
+        function switchSection(section) {
+            document.querySelectorAll('.main-content > div').forEach(div => div.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`section-${section}`).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('sc_user');
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+  </html>
+  
